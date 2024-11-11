@@ -27,10 +27,19 @@ class PetController extends Controller
 
     public function delete(int $id)
     {
-        Http::delete('https://petstore.swagger.io/v2/pet/' . $id);
+        $response = Http::delete('https://petstore.swagger.io/v2/pet/' . $id);
+        $content = $response->json();
+
+        if (is_null($content)) {
+            $deleteMessage = '<p class="text-danger">Element o podanym ID nie istnieje!</p>';
+        }
+        else {
+            $deleteMessage = '<p class="text-success">Pomyślnie usunięto element o ID ' . $id . '</p>';
+        }
 
         return view('index', [
-            'deleteId' => $id
+            'deleteMessage' => $deleteMessage,
+            'id' => $id
         ]);
     }
 
@@ -128,11 +137,11 @@ class PetController extends Controller
     {
         $tags = [];
 
-        if (isset($data['tags'])) {
-            for ($i=0; $i<=count($data['tags']['id'])-1; $i++) {
+        if (isset($content['tags'])) {
+            for ($i=0; $i<=count($content['tags']['id'])-1; $i++) {
                 $tags[] = [
-                    'id' => $data['tags']['id'][$i],
-                    'name' => $data['tags']['name'][$i],
+                    'id' => $content['tags']['id'][$i],
+                    'name' => $content['tags']['name'][$i],
                 ];
             }
         }

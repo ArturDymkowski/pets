@@ -25,8 +25,8 @@
         </div>
     </div>
 
-    @if(isset($deleteId))
-    <p class="text-success">Pomyślnie usunięto element o ID {{ $deleteId }}</p>
+    @if(isset($deleteMessage))
+        {!! $deleteMessage !!}
     @endif
 
     @if(isset($pet))
