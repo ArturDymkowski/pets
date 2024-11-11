@@ -6,6 +6,25 @@
         .category {
             width: 100%;
         }
+
+        .parent-container{
+            height:auto;
+        }
+
+        .container{
+            position:relative;
+        }
+
+        .container > input {
+            display:block;
+            margin:5px 0;
+        }
+
+        .container > button {
+            position: absolute;
+            margin-top: -42px;
+            right: -35px;
+        }
     </style>
 
     <div class="row">
@@ -48,7 +67,38 @@
                 <label for="id">Status</label>
                 <input type="text" class="form-control" id="status" name="status" placeholder="Status" value="@if(isset($pet['status'])){{ $pet['status'] }}@endif">
             </div>
+            <div class="form-group mb-3">
+                <label>Photos Urls</label>
+                    <div class="parent-container">
+                        {!! $contentForPhotoUrlsRepeater !!}
+                    </div>
+                <button type='button' class='btn btn-success' id='add'>+</button>
+            </div>
             <input type="submit" name="submit" class="btn btn-primary" value="Zapisz">
         </form>
     </div>
+
+    <script>
+        var content = "<div class='container'>" +
+            "<input class='form-control' name='photoUrls[]' type='text' required>" +
+            "<button class='btn btn-danger' type='button' id='remove'>-</button>"
+            "</div>";
+
+        // $(".parent-container").html(content);
+
+        $("#add").on("click", function(){
+            if($(".parent-container").children().length < 5){
+                $(".parent-container").append(content);
+            }
+            if($(".parent-container").children().length == 5){
+                $("#add").hide();
+            }
+        });
+
+        $(".parent-container").on("click", "#remove", function(){
+            $(this).parent().remove();
+            $("#add").show();
+        });
+
+    </script>
 @endsection

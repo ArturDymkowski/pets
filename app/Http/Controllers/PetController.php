@@ -28,6 +28,14 @@ class PetController extends Controller
     public function edit(Request $request, int $id)
     {
         $pet = $this->getPet($id);
+        $contentForPhotoUrlsRepeater = "<div class='container'>";
+
+        foreach ($pet['photoUrls'] as $photoUrl) {
+            $contentForPhotoUrlsRepeater .= "<input class='form-control' name='photoUrls[]' type='text' value='$photoUrl'>";
+            $contentForPhotoUrlsRepeater .= "<button class='btn btn-danger' type='button' id='remove'>-</button>";
+        }
+
+        $contentForPhotoUrlsRepeater .= '</div>';
 
         if ($request->submit) {
             $data = $request->all();
@@ -37,11 +45,12 @@ class PetController extends Controller
 
             $response = Http::put("https://petstore.swagger.io/v2/pet", [
                 'id' => $id,
-                'name' => $data['name'],
-                'status' => $data['status'],
+                'name' => $data['name'] ?? '',
+                'status' => $data['status'] ?? '',
+                'photoUrls' => $data['photoUrls'] ?? [],
                 'category' => [
-                    'id' => $data['category_id'],
-                    'name' => $data['category_name'],
+                    'id' => $data['category_id'] ?? '',
+                    'name' => $data['category_name'] ?? '',
                 ]
             ]);
 
@@ -50,7 +59,8 @@ class PetController extends Controller
 
         return view('edit', [
             'id' => $id,
-            'pet' => $pet
+            'pet' => $pet,
+            'contentForPhotoUrlsRepeater' => $contentForPhotoUrlsRepeater
         ]);
     }
 }
