@@ -15,15 +15,19 @@
         <div class="btn-group" role="group" aria-label="Actions">
             <a href="@if(isset($id)) {{ route('pets.index', ['id' => $id]) }} @else # @endif" class="btn btn-info" id="pet_show">Pokaż</a>
             <a href="@if(isset($id)) {{ route('pets.edit', ['id' => $id])  }} @else # @endif" class="btn btn-warning" id="pet_edit">Edytuj</a>
-            <a href="@if(isset($id)) {{ route('pets.index', ['id' => $id])  }} @else # @endif" class="btn btn-danger" id="pet_delete">Usuń</a>
+            <a href="@if(isset($id)) {{ route('pets.delete', ['id' => $id])  }} @else # @endif" class="btn btn-danger" id="pet_delete" onclick="return confirm('Jesteś pewien że chcesz usunąć ten element?');">Usuń</a>
         </div>
 
     </div>
     <div class="row mt-1">
         <div class="btn-group">
-            <a href="" class="btn btn-success">Dodaj nowy element</a>
+            <a href="{{ route('pets.add') }}" class="btn btn-success">Dodaj nowy element</a>
         </div>
     </div>
+
+    @if(isset($deleteId))
+    <p class="text-success">Pomyślnie usunięto element o ID {{ $deleteId }}</p>
+    @endif
 
     @if(isset($pet))
         <div class="row mt-5">
@@ -113,10 +117,12 @@
             petShowUrl = petShowUrl.slice(0, -1) + document.getElementById('pet_id').value;
             var petEditUrl = "{{ route('pets.edit', ['id' => 1])  }}";
             petEditUrl = petEditUrl.slice(0, -1) + document.getElementById('pet_id').value;
+            var petDeleteUrl = "{{ route('pets.delete', ['id' => 1])  }}";
+            petDeleteUrl = petDeleteUrl.slice(0, -1) + document.getElementById('pet_id').value;
 
             document.getElementById('pet_show').href = petShowUrl;
             document.getElementById('pet_edit').href = petEditUrl;
-            document.getElementById('pet_delete').href = "sradaraar";
+            document.getElementById('pet_delete').href = petDeleteUrl;
         }
 
         petId.addEventListener('input', inputHandler);

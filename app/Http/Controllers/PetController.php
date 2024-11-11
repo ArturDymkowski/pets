@@ -25,29 +25,42 @@ class PetController extends Controller
         ]);
     }
 
+    public function delete(int $id)
+    {
+        Http::delete('https://petstore.swagger.io/v2/pet/' . $id);
+
+        return view('index', [
+            'deleteId' => $id
+        ]);
+    }
+
     public function edit(Request $request, int $id)
     {
         $pet = $this->getPet($id);
         $contentForPhotoUrlsRepeater = "";
         $contentForTagsRepeater = "";
 
-        foreach ($pet['photoUrls'] as $photoUrl) {
-            $contentForPhotoUrlsRepeater .= "<div class='container'>";
-            $contentForPhotoUrlsRepeater .= "<input class='form-control' name='photoUrls[]' type='text' value='$photoUrl'>";
-            $contentForPhotoUrlsRepeater .= "<button class='btn btn-danger' type='button' id='remove'>-</button>";
-            $contentForPhotoUrlsRepeater .= '</div>';
+        if (isset($pet['photoUrls'])) {
+            foreach ($pet['photoUrls'] as $photoUrl) {
+                $contentForPhotoUrlsRepeater .= "<div class='container'>";
+                $contentForPhotoUrlsRepeater .= "<input class='form-control' name='photoUrls[]' type='text' value='$photoUrl'>";
+                $contentForPhotoUrlsRepeater .= "<button class='btn btn-danger' type='button' id='remove'>-</button>";
+                $contentForPhotoUrlsRepeater .= '</div>';
+            }
         }
 
-        foreach ($pet['tags'] as $tag) {
-            $tagId = $tag['id'];
-            $tagName = $tag['name'];
-            $contentForTagsRepeater .= "<div class='tags-container mb-1' style='display: flex;'>";
-            $contentForTagsRepeater .= '<label>ID</label>';
-            $contentForTagsRepeater .= "<input class='form-control' name='tags[id][]' type='text' value='$tagId'>";
-            $contentForTagsRepeater .= '<label>Name</label>';
-            $contentForTagsRepeater .= "<input class='form-control' name='tags[name][]' type='text' value='$tagName'>";
-            $contentForTagsRepeater .= "<button class='btn btn-danger' type='button' id='remove-tag'>-</button>";
-            $contentForTagsRepeater .= '</div>';
+        if (isset($pet['tags'])) {
+            foreach ($pet['tags'] as $tag) {
+                $tagId = $tag['id'];
+                $tagName = $tag['name'];
+                $contentForTagsRepeater .= "<div class='tags-container mb-1' style='display: flex;'>";
+                $contentForTagsRepeater .= '<label>ID</label>';
+                $contentForTagsRepeater .= "<input class='form-control' name='tags[id][]' type='text' value='$tagId'>";
+                $contentForTagsRepeater .= '<label>Name</label>';
+                $contentForTagsRepeater .= "<input class='form-control' name='tags[name][]' type='text' value='$tagName'>";
+                $contentForTagsRepeater .= "<button class='btn btn-danger' type='button' id='remove-tag'>-</button>";
+                $contentForTagsRepeater .= '</div>';
+            }
         }
 
         if ($request->submit) {
@@ -55,20 +68,11 @@ class PetController extends Controller
 
             $request->validate([
                 'category_id' => 'numeric',
-                'tags[id]' => 'numeric',
             ]);
-            $tags = [];
 
-            if (isset($data['tags'])) {
-                for ($i=0; $i<=count($data['tags']['id'])-1; $i++) {
-                    $tags[] = [
-                        'id' => $data['tags']['id'][$i],
-                        'name' => $data['tags']['name'][$i],
-                    ];
-                }
-            }
+            $tags = $this->getTags($data);
 
-            $response = Http::put("https://petstore.swagger.io/v2/pet", [
+            Http::put("https://petstore.swagger.io/v2/pet", [
                 'id' => $id,
                 'name' => $data['name'] ?? '',
                 'status' => $data['status'] ?? '',
@@ -89,5 +93,50 @@ class PetController extends Controller
             'contentForPhotoUrlsRepeater' => $contentForPhotoUrlsRepeater,
             'contentForTagsRepeater' => $contentForTagsRepeater
         ]);
+    }
+
+    public function add(Request $request)
+    {
+        if ($request->submit) {
+            $data = $request->all();
+
+            $request->validate([
+                'category_id' => 'numeric',
+                'id' => 'numeric',
+            ]);
+            $tags = $this->getTags($data);
+
+            Http::post("https://petstore.swagger.io/v2/pet", [
+                'id' => $data['id'],
+                'name' => $data['name'] ?? '',
+                'status' => $data['status'] ?? '',
+                'photoUrls' => $data['photoUrls'] ?? [],
+                'category' => [
+                    'id' => $data['category_id'] ?? '',
+                    'name' => $data['category_name'] ?? '',
+                ],
+                'tags' => $tags
+            ]);
+
+            return redirect()->route('pets.index', ['id' => $data['id']]);
+        }
+
+        return view('add');
+    }
+
+    private function getTags(array $content)
+    {
+        $tags = [];
+
+        if (isset($data['tags'])) {
+            for ($i=0; $i<=count($data['tags']['id'])-1; $i++) {
+                $tags[] = [
+                    'id' => $data['tags']['id'][$i],
+                    'name' => $data['tags']['name'][$i],
+                ];
+            }
+        }
+
+        return $tags;
     }
 }
