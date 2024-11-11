@@ -14,7 +14,7 @@
 
         <div class="btn-group" role="group" aria-label="Actions">
             <a href="@if(isset($id)) {{ route('pets.index', ['id' => $id]) }} @else # @endif" class="btn btn-info" id="pet_show">Pokaż</a>
-            <a href="@if(isset($id)) {{ route('pets.index', ['id' => $id])  }} @else # @endif" class="btn btn-warning" id="pet_edit">Edytuj</a>
+            <a href="@if(isset($id)) {{ route('pets.edit', ['id' => $id])  }} @else # @endif" class="btn btn-warning" id="pet_edit">Edytuj</a>
             <a href="@if(isset($id)) {{ route('pets.index', ['id' => $id])  }} @else # @endif" class="btn btn-danger" id="pet_delete">Usuń</a>
         </div>
 
@@ -25,67 +25,67 @@
         </div>
     </div>
 
-    @if(isset($content))
+    @if(isset($pet))
         <div class="row mt-5">
             <table class="table">
                 <tbody>
-                @if(isset($content['code']))
+                @if(isset($pet['code']))
                     <p class="text-danger">Wystąpił błąd!</p>
                     <tr>
                         <td>Code:</td>
-                        <td><strong>{{ $content['code'] }}</strong></td>
+                        <td><strong>{{ $pet['code'] }}</strong></td>
                     </tr>
-                    @if(isset($content['type']))
+                    @if(isset($pet['type']))
                         <tr>
                             <td>Type:</td>
-                            <td><strong>{{ $content['type'] }}</strong></td>
+                            <td><strong>{{ $pet['type'] }}</strong></td>
                         </tr>
                     @endif
-                    @if(isset($content['message']))
+                    @if(isset($pet['message']))
                         <tr>
                             <td>Message:</td>
-                            <td><strong>{{ $content['message'] }}</strong></td>
+                            <td><strong>{{ $pet['message'] }}</strong></td>
                         </tr>
                     @endif
                 @else
                     <p class="text-success">Sukces!</p>
-                    @if(isset($content['id']))
+                    @if(isset($pet['id']))
                         <tr>
                             <td>ID:</td>
-                            <td><strong>{{ $content['id'] }}</strong></td>
+                            <td><strong>{{ $pet['id'] }}</strong></td>
                         </tr>
                     @endif
-                    @if(isset($content['category']))
+                    @if(isset($pet['category']))
                         <tr>
                             <td>Category:</td>
                             <td>
-                                ID: <strong>{{ $content['category']['id'] }}</strong> <br>
-                                Name: <strong>{{ $content['category']['name'] }}</strong>
+                                ID: <strong>{{ $pet['category']['id'] }}</strong> <br>
+                                Name: <strong>{{ $pet['category']['name'] }}</strong>
                             </td>
                         </tr>
                     @endif
-                    @if(isset($content['name']))
+                    @if(isset($pet['name']))
                         <tr>
                             <td>Name:</td>
-                            <td><strong>{{ $content['name'] }}</strong></td>
+                            <td><strong>{{ $pet['name'] }}</strong></td>
                         </tr>
                     @endif
-                    @if(!empty($content['photoUrls']))
+                    @if(!empty($pet['photoUrls']))
                         <tr>
                             <td>PhotoUrls:</td>
                             <td>
-                                @foreach($content['photoUrls'] as $photoUrl)
+                                @foreach($pet['photoUrls'] as $photoUrl)
                                     <a href="{{ $photoUrl }}" target="_blank"><img src="{{ $photoUrl }}" alt="{{ $photoUrl }}"
                                                                                    width="250" height="250"></a>
                                 @endforeach
                             </td>
                         </tr>
                     @endif
-                    @if(!empty($content['tags']))
+                    @if(!empty($pet['tags']))
                         <tr>
                             <td>Tags:</td>
                             <td>
-                                @foreach($content['tags'] as $tag)
+                                @foreach($pet['tags'] as $tag)
                                     ID: <strong>{{ $tag['id'] }}</strong> <br>
                                     Name: <strong>{{ $tag['name'] }}</strong>
                                     <br><br>
@@ -93,10 +93,10 @@
                             </td>
                         </tr>
                     @endif
-                    @if(!empty($content['status']))
+                    @if(!empty($pet['status']))
                         <tr>
                             <td>Status:</td>
-                            <td><strong>{{ $content['status'] }}</strong></td>
+                            <td><strong>{{ $pet['status'] }}</strong></td>
                         </tr>
                     @endif
                 @endif
@@ -111,9 +111,11 @@
         const inputHandler = function (e) {
             var petShowUrl = "{{ route('pets.index', ['id' => 1])  }}";
             petShowUrl = petShowUrl.slice(0, -1) + document.getElementById('pet_id').value;
+            var petEditUrl = "{{ route('pets.edit', ['id' => 1])  }}";
+            petEditUrl = petEditUrl.slice(0, -1) + document.getElementById('pet_id').value;
 
             document.getElementById('pet_show').href = petShowUrl;
-            document.getElementById('pet_edit').href = "sradaraar";
+            document.getElementById('pet_edit').href = petEditUrl;
             document.getElementById('pet_delete').href = "sradaraar";
         }
 
