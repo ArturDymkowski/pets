@@ -20,9 +20,15 @@
             margin:5px 0;
         }
 
-        .container > button {
+        .parent-container .container > button {
             position: absolute;
             margin-top: -42px;
+            right: -35px;
+        }
+
+        .tags-parent-container .container > button {
+            position: absolute;
+            margin-top: 0;
             right: -35px;
         }
     </style>
@@ -74,6 +80,13 @@
                     </div>
                 <button type='button' class='btn btn-success' id='add'>+</button>
             </div>
+            <div class="form-group mb-3">
+                <label>Tags</label>
+                <div class="tags-parent-container">
+                    {!! $contentForTagsRepeater !!}
+                </div>
+                <button type='button' class='btn btn-success' id='add-tag'>+</button>
+            </div>
             <input type="submit" name="submit" class="btn btn-primary" value="Zapisz">
         </form>
     </div>
@@ -84,8 +97,17 @@
             "<button class='btn btn-danger' type='button' id='remove'>-</button>"
             "</div>";
 
+        var tagsContent = "<div class='tags-container mb-1' style='display: flex;'>" +
+            "<label>ID</label>" +
+            "<input class='form-control' name='tags[id][]' type='text' required>" +
+            "<label>Name</label>" +
+            "<input class='form-control' name='tags[name][]' type='text' required>" +
+            "<button class='btn btn-danger' type='button' id='remove-tag'>-</button>"
+        "</div>";
+
         // $(".parent-container").html(content);
 
+        // Photos
         $("#add").on("click", function(){
             if($(".parent-container").children().length < 5){
                 $(".parent-container").append(content);
@@ -98,6 +120,21 @@
         $(".parent-container").on("click", "#remove", function(){
             $(this).parent().remove();
             $("#add").show();
+        });
+
+        //Tags
+        $("#add-tag").on("click", function(){
+            if($(".tags-parent-container").children().length < 5){
+                $(".tags-parent-container").append(tagsContent);
+            }
+            if($(".tags-parent-container").children().length == 5){
+                $("#add-tag").hide();
+            }
+        });
+
+        $(".tags-parent-container").on("click", "#remove-tag", function(){
+            $(this).parent().remove();
+            $("#add-tag").show();
         });
 
     </script>

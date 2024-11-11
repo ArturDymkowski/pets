@@ -28,20 +28,45 @@ class PetController extends Controller
     public function edit(Request $request, int $id)
     {
         $pet = $this->getPet($id);
-        $contentForPhotoUrlsRepeater = "<div class='container'>";
+        $contentForPhotoUrlsRepeater = "";
+        $contentForTagsRepeater = "";
 
         foreach ($pet['photoUrls'] as $photoUrl) {
+            $contentForPhotoUrlsRepeater .= "<div class='container'>";
             $contentForPhotoUrlsRepeater .= "<input class='form-control' name='photoUrls[]' type='text' value='$photoUrl'>";
             $contentForPhotoUrlsRepeater .= "<button class='btn btn-danger' type='button' id='remove'>-</button>";
+            $contentForPhotoUrlsRepeater .= '</div>';
         }
 
-        $contentForPhotoUrlsRepeater .= '</div>';
+        foreach ($pet['tags'] as $tag) {
+            $tagId = $tag['id'];
+            $tagName = $tag['name'];
+            $contentForTagsRepeater .= "<div class='tags-container mb-1' style='display: flex;'>";
+            $contentForTagsRepeater .= '<label>ID</label>';
+            $contentForTagsRepeater .= "<input class='form-control' name='tags[id][]' type='text' value='$tagId'>";
+            $contentForTagsRepeater .= '<label>Name</label>';
+            $contentForTagsRepeater .= "<input class='form-control' name='tags[name][]' type='text' value='$tagName'>";
+            $contentForTagsRepeater .= "<button class='btn btn-danger' type='button' id='remove-tag'>-</button>";
+            $contentForTagsRepeater .= '</div>';
+        }
 
         if ($request->submit) {
             $data = $request->all();
+
             $request->validate([
                 'category_id' => 'numeric',
+                'tags[id]' => 'numeric',
             ]);
+            $tags = [];
+
+            if (isset($data['tags'])) {
+                for ($i=0; $i<=count($data['tags']['id'])-1; $i++) {
+                    $tags[] = [
+                        'id' => $data['tags']['id'][$i],
+                        'name' => $data['tags']['name'][$i],
+                    ];
+                }
+            }
 
             $response = Http::put("https://petstore.swagger.io/v2/pet", [
                 'id' => $id,
@@ -51,7 +76,8 @@ class PetController extends Controller
                 'category' => [
                     'id' => $data['category_id'] ?? '',
                     'name' => $data['category_name'] ?? '',
-                ]
+                ],
+                'tags' => $tags
             ]);
 
             return redirect()->route('pets.edit', ['id' => $id]);
@@ -60,7 +86,8 @@ class PetController extends Controller
         return view('edit', [
             'id' => $id,
             'pet' => $pet,
-            'contentForPhotoUrlsRepeater' => $contentForPhotoUrlsRepeater
+            'contentForPhotoUrlsRepeater' => $contentForPhotoUrlsRepeater,
+            'contentForTagsRepeater' => $contentForTagsRepeater
         ]);
     }
 }
