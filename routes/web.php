@@ -8,5 +8,5 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'pets', 'as' => 'pets'], function(){
-    Route::get('/{pet}', [PetController::class, 'index'])->name('.index');
+    Route::get('/{id}', [PetController::class, 'index'])->name('.index')->where('id', '[0-9]+');
 });
